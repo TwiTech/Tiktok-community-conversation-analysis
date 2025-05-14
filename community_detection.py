@@ -1,82 +1,3 @@
-# import pandas as pd
-# import networkx as nx
-# import matplotlib.pyplot as plt
-# import community as community_louvain  # Louvain algorithm
-# from networkx.algorithms.community import girvan_newman
-# from itertools import islice
-
-# # Load TikTok data
-# tiktok_path = "tiktok_data.csv"
-# tiktok_df = pd.read_csv(tiktok_path)
-
-# # Define drug list
-# drugs = [
-#     'Upadacitinib', 'Rinvoq', 'Jak inhibitors',
-#     'Abrocitinib', 'Cibinqo', 'Baricitinib', 'Olumiant',
-#     'Ritlecitinib', 'Litfulo', 'Tofacitinib', 'Xeljanz',
-#     'Filgotinib', 'Jyseleca', 'Deucravacitinib', 'Sotyktu',
-#     'Delgocitinib', 'Corectim', 'Ruxolitinib', 'Jakavi',
-#     'Opzelura', 'Peficitinib', 'Smyraf'
-# ]
-
-# # Initialize graph
-# G_tiktok = nx.Graph()
-
-# # Helper to add or update node
-# def add_node(graph, node, **attrs):
-#     if graph.has_node(node):
-#         graph.nodes[node].update(attrs)
-#     else:
-#         graph.add_node(node, **attrs)
-
-# # Build graph
-# for _, row in tiktok_df.iterrows():
-#     post_id = str(row['post_id']) if pd.notnull(row['post_id']) else None
-#     author_id = row['author_unique_id'] if pd.notnull(row['author_unique_id']) else "Unknown_User"
-#     desc = str(row.get('translated_desc', ''))
-#     vid_text = str(row.get('translated_video_text', ''))
-#     text = str(row.get('translated_text', ''))
-#     combined_text = ' '.join([desc, vid_text, text]).strip()
-
-#     if not post_id:
-#         continue
-
-#     # Add nodes
-#     add_node(G_tiktok, post_id, type='video', content=combined_text)
-#     add_node(G_tiktok, author_id, type='user')
-#     G_tiktok.add_edge(author_id, post_id, type='authorship')
-
-#     for drug in drugs:
-#         if drug.lower() in combined_text.lower():
-#             add_node(G_tiktok, drug, type='drug')
-#             G_tiktok.add_edge(post_id, drug, type='mentions')
-
-# # --- Community Detection ---
-
-# # Louvain Algorithm
-# louvain_partition = community_louvain.best_partition(G_tiktok)
-
-# # Assign community as node attribute
-# nx.set_node_attributes(G_tiktok, louvain_partition, 'louvain_community')
-
-# # Number of communities detected
-# num_louvain_communities = len(set(louvain_partition.values()))
-
-# # --- Girvan-Newman Algorithm (Top 5 communities only) ---
-# girvan_communities = list(islice(girvan_newman(G_tiktok), 5))
-# gn_top_partition = {node: i for i, community in enumerate(girvan_communities[-1]) for node in community}
-
-# # Assign community as node attribute
-# nx.set_node_attributes(G_tiktok, gn_top_partition, 'girvan_newman_community')
-
-# # Number of communities detected by Girvan-Newman
-# num_gn_communities = len(set(gn_top_partition.values()))
-
-# # Return counts
-# print(num_louvain_communities)
-# print (num_gn_communities)
-
-
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -129,7 +50,7 @@ gn_top_partition = {node: i for i, comm in enumerate(gn_communities[-1]) for nod
 nx.set_node_attributes(G, gn_top_partition, 'girvan_newman_community')
 print(f"Girvan-Newman detected {len(set(gn_top_partition.values()))} communities.")
 
-# Optional: Save node communities to CSV
+# Save node communities to CSV
 nodes_data = []
 for node, data in G.nodes(data=True):
     nodes_data.append({
